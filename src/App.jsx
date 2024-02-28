@@ -2,13 +2,13 @@
 import { ChakraProvider, theme, Alert, AlertIcon, AlertDescription, Container, Box, AlertTitle, Button } from '@chakra-ui/react'
 import { useState } from 'react';
 
-function notifyUser(notificationText = "Thank you for enabling notifications!") {
+async function notifyUser(notificationText = "Thank you for enabling notifications!") {
   if (!("Notification" in window)) {
     alert("Browser does not support notifications");
   } else if (Notification.permission === "granted") {
     const notification = new Notification(notificationText);
   } else if (Notification.permission !== "denied") {
-    Notification.requestPermission().then((permission) => {
+    await Notification.requestPermission().then((permission) => {
       if (permission === "granted") {
         const notification = new Notification(notificationText);
       }
@@ -19,9 +19,10 @@ function notifyUser(notificationText = "Thank you for enabling notifications!") 
 function App() {
   const [userResponded, setUserResponded] = useState(false)
 
-  const enableNotifsAndClose = () => {
-    notifyUser();
-    setUserResponded(true);
+  const enableNotifsAndClose = async() => {
+    await notifyUser().then(()=>{
+      setUserResponded(true)
+    })
   }
   const disableNotifsAndClose = () => {
     setUserResponded(true);
@@ -49,7 +50,7 @@ function App() {
     </ChakraProvider>
   ) : (Notification.permission === "granted") ? (
     <ChakraProvider theme={theme}>
-
+      <Button colorScheme='gray' size={'sm'} onClick={notifyUser('Thanks you Watching for the News')}></Button>
     </ChakraProvider>
   ) : <>
     <h1>You have Disable Notification</h1>
